@@ -10,8 +10,9 @@ function CandleStick() {
 
   const [stock, setStock] = useState([]);
   const [symbol, setSymbol] = useState("wrxinr");
-  const [time, setTime] = useState("5m");
+  const [time, setTime] = useState("1m");
   const [VHL, setVHL] = useState([]);
+  const [nor, setNor] = useState();
   let a = useSelector(state => state.coinDBReducer.symbolcreated);
 
   console.log(symbol);
@@ -21,7 +22,28 @@ function CandleStick() {
   useEffect(() => {
     setSymbol(a);
   }, [a])
-  
+
+  useEffect(() => {
+
+    const ws = new WebSocket("wss://stream.wazirx.com/stream");
+    ws.addEventListener('open', () => {
+      ws.send(JSON.stringify({ event: 'subscribe', streams: [`${symbol}@kline_${time}`] }));
+
+    });
+
+    ws.onmessage = (e) => {
+      const res = JSON.parse(e.data);
+      const d = res.data;
+      console.log(d);
+      setNor({ 'T': d.T + 19800000, 'o': d.o, 'c': d.c, 'l': d.l, 'h': d.h });
+    };
+  }, [])
+
+
+  if (nor?.o !== undefined) {
+    data.push({ x: nor.T, y: [nor.c, nor.h, nor.l, nor.o] });
+  }
+
 
   var options = {
     legend: {
@@ -29,7 +51,23 @@ function CandleStick() {
       floating: true,
     },
     chart: {
-      
+
+      toolbar: {
+        show: true,
+        offsetX: 1,
+        offsetY: 0,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: false | '<img src="/static/icons/reset.png" width="20">',
+          customIcons: [],
+        },
+        autoSelected: "zoom",
+      },
       type: "candlestick",
       height: 350,
     },
@@ -45,12 +83,12 @@ function CandleStick() {
       },
     },
     tooltip: {
-        enabled: false,
-      },
+      enabled: false,
+    },
     annotations: {
       yaxis: [
         {
-          y: VHL.highPrice,
+          y: VHL.lastPrice,
           borderColor: "Black",
           label: {
             borderColor: "black",
@@ -58,7 +96,7 @@ function CandleStick() {
               color: "#fff",
               background: "black",
             },
-            text: `${VHL.highPrice}`,
+            text: `${VHL.lastPrice}`,
           },
         },
       ],
@@ -75,15 +113,6 @@ function CandleStick() {
     });
   }, [time, symbol, stock]);
 
-  // useEffect(() => {
-  //   axios({
-  //     method: "get",
-  //     url: `https://api.wazirx.com/sapi/v1/exchangeInfo`,
-  //   }).then((res) => {
-  //     setfirst(res.data.symbols);
-  //   });
-  // }, []);
-
   useEffect(() => {
     axios({
       method: "get",
@@ -95,16 +124,16 @@ function CandleStick() {
         setVHL(res.data);
       }
     });
-    
+
   }, [symbol]);
 
   function calIndex() {
     for (let i = 0; i < stock.length; i++) {
       let time = parseInt(stock[i][0] * 1000 + 19800000);
-      let low = parseFloat(stock[i][2]);
-      let open = parseFloat(stock[i][1]);
-      let close = parseFloat(stock[i][4]);
-      let high = parseFloat(stock[i][3]);
+      let high = parseFloat(stock[i][2]);
+      let close = parseFloat(stock[i][1]);
+      let open = parseFloat(stock[i][4]);
+      let low = parseFloat(stock[i][3]);
       data.push({ x: time, y: [close, high, low, open] });
     }
   }
@@ -196,7 +225,7 @@ function CandleStick() {
           1W
         </p>
         <div>
-          <div style={{ display: "flex", marginLeft: "500px" }}>
+          <div style={{ display: "flex", marginLeft: "10%" }}>
             <p>Volume &nbsp;</p>
             <p style={{ fontWeight: "bold" }}>{VHL.volume} &nbsp;</p>
             <p>&nbsp; High &nbsp;</p>
@@ -213,7 +242,7 @@ function CandleStick() {
         series={series}
         type="candlestick"
         height={"500px"}
-        width={"1050px"}
+        width={"100%"}
       />
     </div>
   );
