@@ -6,6 +6,7 @@ import {
   SET_USER_FAV_CURRENCY_RATE,
   SET_USER_FAV_CURRENCY,
   SWITCH_THEME,
+  CHART_SYMBOL,
 } from "../constant";
 // import {
 //   // getClosedOrders,
@@ -145,7 +146,6 @@ export function switchTheme(theme_name) {
 
 export function Chartsymbol(data) {
   return (dispatch) => {
-    dispatch({ type: "Chartsymbol" , data: data });
+    dispatch({ type: CHART_SYMBOL, data: data });
   };
 }
-  

@@ -6,7 +6,6 @@ import { Chartsymbol } from '../redux/actions/coinDBAction';
 
 export default function ExSide() {
   const dispatch = useDispatch();
-  const [symbol, setSymbol] = useState("wrxinr");
   const [first, setfirst] = useState([]);
   const [inputData, setInputData] = useState("");
   useEffect(() => {

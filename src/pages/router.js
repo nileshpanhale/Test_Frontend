@@ -79,7 +79,7 @@ export default function Router(props) {
   useEffect(() => {
     const socket = new createSocketClient("kujgwvfq-a-ghosttown-z-1fhhup0p6");
     socket.on("cmc_updated", (res) => {
-      console.log("res cmc: ", res);
+      // console.log("res cmc: ", res);
       if (res[0]?.raw_current_price_inr) {
         dispatch({ type: GET_COIN_DATA, data: res, coin_loading: false });
       }

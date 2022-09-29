@@ -15,6 +15,7 @@ import {
   SET_WALLET_DETAILS,
   BUY_MARKET_PRICE,
   SELL_MARKET_PRICE,
+  CHART_SYMBOL,
 } from "../constant";
 
 const initialState = {
@@ -42,17 +43,18 @@ const initialState = {
   buymarket: {
     marketprice: 0,
     marketvolume: 0,
-    active:0,
+    active: 0,
   },
   sellmarket: {
     marketprice: 0,
     marketvolume: 0,
-    active:0,
+    active: 0,
   },
-  symbolcreated : ''
+  symbolcreated: 'ethinr'
 };
 
 export default function coinDBReducer(state = initialState, action) {
+  console.log("Action type : ", action.type);
   switch (action.type) {
     case GET_COIN_DATA:
       return {
@@ -146,15 +148,13 @@ export default function coinDBReducer(state = initialState, action) {
         ...state,
         sellmarket: action.data,
       };
-      case "Chartsymbol" :
-        return{
-          ...state , 
-          symbolcreated : action.data
-        }
-    default:
+    case CHART_SYMBOL:
       return {
         ...state,
-      };
-      
-    }
+        symbolcreated: action.data
+      }
+    default:
+      return state;
+
+  }
 }

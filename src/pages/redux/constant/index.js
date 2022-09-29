@@ -26,6 +26,7 @@ export const SET_WALLET_DETAILS = "SET_WALLET_DETAILS";
 export const BUY_MARKET_PRICE = "BUY_MARKET_PRICE";
 export const SELL_MARKET_PRICE = "SELL_MARKET_PRICE";
 export const BANNER_CLOSE = "BANNER_CLOSE";
+export const CHART_SYMBOL = "CHART_SYMBOL";
 
-export const value_setter=0;
+export const value_setter = 0;
 

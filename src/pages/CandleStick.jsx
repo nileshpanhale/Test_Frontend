@@ -4,46 +4,50 @@ import ReactApexChart from "react-apexcharts";
 import { useSelector } from "react-redux";
 import "./candlestick.css";
 
-
-
 function CandleStick() {
-
   const [stock, setStock] = useState([]);
-  const [symbol, setSymbol] = useState("wrxinr");
   const [time, setTime] = useState("1m");
   const [VHL, setVHL] = useState([]);
   const [nor, setNor] = useState();
-  let a = useSelector(state => state.coinDBReducer.symbolcreated);
-
-  console.log(symbol);
+  let symbol = useSelector((state) => state.coinDBReducer.symbolcreated);
+  const [test, setTest] = useState({});
+  // console.log("first", symbol);
   const data = [];
   const series = [{ data }];
+  const ws = new WebSocket("wss://stream.wazirx.com/stream");
+
+  console.log("Updated symbol : ", symbol);
 
   useEffect(() => {
-    setSymbol(a);
-  }, [a])
 
-  useEffect(() => {
-
-    const ws = new WebSocket("wss://stream.wazirx.com/stream");
-    ws.addEventListener('open', () => {
-      ws.send(JSON.stringify({ event: 'subscribe', streams: [`${symbol}@kline_${time}`] }));
-
+    ws.addEventListener("open", () => {
+      ws.send(
+        JSON.stringify({ event: "subscribe", streams: [`${symbol}@kline_${time}`] })
+      );
     });
 
     ws.onmessage = (e) => {
       const res = JSON.parse(e.data);
-      const d = res.data;
-      console.log(d);
-      setNor({ 'T': d.T + 19800000, 'o': d.o, 'c': d.c, 'l': d.l, 'h': d.h });
-    };
-  }, [])
+      var d = res.data;
+      console.log("Data duplicate : ", d, d.s == symbol, " symbol : ", symbol);
+      setTest(d);
 
+    };
+
+  }, [symbol]);
+
+  useEffect(() => {
+    console.log("Test symbol : ", symbol, test.s);
+    if (test.s == symbol) {
+      setNor({ T: test.T + 19800000, o: test.o, c: test.c, l: test.l, h: test.h, s: test.s });
+    }
+  }, [test]);
+
+  console.log("Data to check : ", nor);
 
   if (nor?.o !== undefined) {
     data.push({ x: nor.T, y: [nor.c, nor.h, nor.l, nor.o] });
   }
-
 
   var options = {
     legend: {
@@ -51,7 +55,6 @@ function CandleStick() {
       floating: true,
     },
     chart: {
-
       toolbar: {
         show: true,
         offsetX: 1,
@@ -73,18 +76,26 @@ function CandleStick() {
     },
     xaxis: {
       type: "datetime",
-      labels: {
-        datetimeFormatter: {
-          year: "yyyy",
-          month: "MMM 'yy",
-          day: "dd MMM",
-          hour: "HH:mm",
-        },
+      tooltip: {
+        enabled: true,
       },
     },
-    tooltip: {
-      enabled: false,
+    yaxis: {
+      tooltip: {
+        enabled: true,
+      },
+      opposite: true,
     },
+    tooltip: {
+      shared: true,
+      theme: "dark",
+      x: {
+        show: true,
+        format: "dd MMM  HH:mm",
+        formatter: undefined,
+      },
+    },
+
     annotations: {
       yaxis: [
         {
@@ -97,11 +108,13 @@ function CandleStick() {
               background: "black",
             },
             text: `${VHL.lastPrice}`,
+            textAnchor: "start",
+            offsetY: 1,
+            position: "left",
           },
         },
       ],
     },
-
   };
 
   useEffect(() => {
@@ -111,7 +124,7 @@ function CandleStick() {
     }).then((res) => {
       setStock(res.data);
     });
-  }, [time, symbol, stock]);
+  }, [time, symbol]);
 
   useEffect(() => {
     axios({
@@ -124,7 +137,6 @@ function CandleStick() {
         setVHL(res.data);
       }
     });
-
   }, [symbol]);
 
   function calIndex() {
@@ -139,20 +151,7 @@ function CandleStick() {
   }
   calIndex();
 
-  // function handling(e) {
-  //   setInputData(e.target.value);
-  // }
-  // function filttering(d) {
-  //   if (
-  //     inputData === "" ||
-  //     d.baseAsset.toLowerCase().includes(inputData.toLocaleLowerCase())
-  //   ) {
-  //     return d;
-  //   }
-  // }
-
   return (
-
     <div>
       <div style={{ display: "flex" }}>
         <div>
@@ -166,12 +165,13 @@ function CandleStick() {
             {symbol.toLocaleUpperCase()}
           </h3>
         </div>
-        <div style={{ color: "black", marginLeft: "70%" }}>
+        <div style={{ color: "black", marginLeft: "650px" }}>
           <h3>Last Price ₹{VHL.lastPrice}</h3>
         </div>
       </div>
       <hr />
-      <div style={{ display: "flex", marginLeft: "1%", height: "10px" }}>
+      <div style={{ display: "flex", height: "20px" }}>
+
         <p id="list" onClick={() => setTime("1m")}>
           1M
         </p>
@@ -219,21 +219,18 @@ function CandleStick() {
         </p>
         <p
           id="list"
-          style={{ marginLeft: "1%" }}
+          style={{ marginLeft: "1%", marginRight: "40%" }}
           onClick={() => setTime("1w")}
         >
           1W
         </p>
-        <div>
-          <div style={{ display: "flex", marginLeft: "10%" }}>
-            <p>Volume &nbsp;</p>
-            <p style={{ fontWeight: "bold" }}>{VHL.volume} &nbsp;</p>
-            <p>&nbsp; High &nbsp;</p>
-            <p style={{ fontWeight: "bold" }}>{VHL.highPrice} &nbsp;</p>
-            <p>&nbsp; low &nbsp;</p>
-            <p style={{ fontWeight: "bold" }}>{VHL.lowPrice} &nbsp;</p>
-          </div>
-        </div>
+
+        <p>Volume &nbsp;</p>
+        <p style={{ fontWeight: "bold" }}>{VHL.volume} &nbsp;</p>
+        <p>&nbsp; High &nbsp;</p>
+        <p style={{ fontWeight: "bold" }}>{VHL.highPrice} &nbsp;</p>
+        <p>&nbsp; low &nbsp;</p>
+        <p style={{ fontWeight: "bold" }}>{VHL.lowPrice} &nbsp;</p>
       </div>
       <hr />
       <ReactApexChart
@@ -241,7 +238,7 @@ function CandleStick() {
         options={options}
         series={series}
         type="candlestick"
-        height={"500px"}
+        height={"100%"}
         width={"100%"}
       />
     </div>
