@@ -16,8 +16,6 @@ function CandleStick() {
   const series = [{ data }];
   const ws = new WebSocket("wss://stream.wazirx.com/stream");
 
-  console.log("Updated symbol : ", symbol);
-
   useEffect(() => {
 
     ws.addEventListener("open", () => {
@@ -29,21 +27,16 @@ function CandleStick() {
     ws.onmessage = (e) => {
       const res = JSON.parse(e.data);
       var d = res.data;
-      console.log("Data duplicate : ", d, d.s == symbol, " symbol : ", symbol);
       setTest(d);
-
     };
 
   }, [symbol]);
 
   useEffect(() => {
-    console.log("Test symbol : ", symbol, test.s);
     if (test.s == symbol) {
       setNor({ T: test.T + 19800000, o: test.o, c: test.c, l: test.l, h: test.h, s: test.s });
     }
   }, [test]);
-
-  console.log("Data to check : ", nor);
 
   if (nor?.o !== undefined) {
     data.push({ x: nor.T, y: [nor.c, nor.h, nor.l, nor.o] });

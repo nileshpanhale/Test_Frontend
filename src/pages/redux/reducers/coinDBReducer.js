@@ -54,7 +54,6 @@ const initialState = {
 };
 
 export default function coinDBReducer(state = initialState, action) {
-  console.log("Action type : ", action.type);
   switch (action.type) {
     case GET_COIN_DATA:
       return {

@@ -26,17 +26,12 @@ import PrivacyControl from "./PrivacyControl";
 import Cupon from "./Cupon";
 import UpcomingProgram from "./UpcomingProgram";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getUserBalance,
-  getUserOrder,
-  
-} from "./redux/actions/coinDBAction";
+import { getUserBalance, getUserOrder } from "./redux/actions/coinDBAction";
 import { getWebsite } from "./redux/actions/websiteDBAction";
 import InrDeposite from "./InrDeposite";
 import MobileVerification from "./MobileVerification";
 import ConfimationPopup from "./components/ConfimationPopup";
 import AffiliateScreen from "./AffiliateScreen";
-
 import Authenticator from "./Authenticator";
 import P2P from "./P2P";
 import NftMarketPlace from "./HomeComp/NftMarketPlace";
@@ -75,7 +70,7 @@ export default function Router(props) {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.AuthReducer.user);
   const { isLoggedIn } = useSelector((state) => state.AuthReducer);
-  
+
   useEffect(() => {
     const socket = new createSocketClient("kujgwvfq-a-ghosttown-z-1fhhup0p6");
     socket.on("cmc_updated", (res) => {
@@ -99,7 +94,7 @@ export default function Router(props) {
     // socket.on("welcome", (msg) => {
     //   console.log("Welcome message", msg);
     // });
-    
+
     socket.on("sell_order_updated", (res) => {
       // console.log("sell_order_updated: ", res);
       dispatch({
@@ -162,7 +157,7 @@ export default function Router(props) {
       <Route path="/exchange/:id?" component={Exchange} />
       <Route path="/p2p/:id?" component={P2P} />
       <Route path="/authenticator" component={Authenticator} />
-      <Route path="/buy-sell" component={BuySell}/>
+      <Route path="/buy-sell" component={BuySell} />
       <Route
         path="/account_authenticator"
         render={(props) =>
@@ -209,8 +204,8 @@ export default function Router(props) {
         }
       />
       <Route path="/download_report" render={(props) =>
-          isLoggedIn ? <Reports {...props} /> : <Redirect to="/login" />
-        }
+        isLoggedIn ? <Reports {...props} /> : <Redirect to="/login" />
+      }
       />
       <Route path="/privacy_control" component={PrivacyControl} />
       <Route path="/coupan" component={Cupon} />
@@ -244,10 +239,10 @@ export default function Router(props) {
       <Route path="/terms-condition" component={Terms} />
       <Route path="/refer" component={Refer} />
       <Route path="/download" component={Download} />
-      <Route path="/about_us" component={About_page}/>
-      <Route path="/Api" component={Api}/>
+      <Route path="/about_us" component={About_page} />
+      <Route path="/Api" component={Api} />
       {/* <Route path="/Metaverse" component={Metaverse}/> */}
- 
+
 
 
     </Switch>
